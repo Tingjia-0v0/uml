@@ -1,6 +1,8 @@
 LINUX_DIR = linux-6.14
 ROOTFS = rootfs/img.ext4
 
+BEAR_CMD := $(if $(shell which bear),bear --append --output compile_commands.json --,)
+
 .PHONY: all
 all: linux rootfs user run
 
@@ -16,7 +18,6 @@ user:
 	$(MAKE) -C user
 
 # Build the kernel module
-BEAR_CMD := $(if $(shell which bear),bear --append --output compile_commands.json --,)
 .PHONY: kmod
 kmod:
 	$(BEAR_CMD) $(MAKE) -C kmod
