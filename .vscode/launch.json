@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/linux-6.14/linux",
             "args": [
-                "ubd0=rootfs/rootfs.ext4",
+                "ubd0=rootfs/img.ext4",
                 "root=/dev/ubda",
                 "mem=256M"
             ],

@@ -1,1 +1,7 @@
 linux-*
+
+# clangd
+compile_commands.json
+.cache
+
+rootfs/img.ext4

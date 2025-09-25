@@ -1,19 +1,29 @@
 LINUX_DIR = linux-6.14
-ROOTFS = rootfs/rootfs.ext4
+ROOTFS = rootfs/img.ext4
 
 .PHONY: all
-all: linux rootfs run
+all: linux rootfs user run
 
 # Build the User Mode Linux kernel
 .PHONY: linux
 linux:
-	${MAKE} -C ${LINUX_DIR} -j$(nproc) defconfig ARCH=um
-	${MAKE} -C ${LINUX_DIR} -j$(nproc) ARCH=um
+	$(MAKE) -C ${LINUX_DIR} -j$(nproc) defconfig ARCH=um
+	$(MAKE) -C ${LINUX_DIR} -j$(nproc) ARCH=um
+
+# Build the userspace programs
+.PHONY: user
+user:
+	$(MAKE) -C user
+
+# Build the kernel module
+.PHONY: kmod
+kmod:
+	$(MAKE) -C kmod
 
 # Build the root filesystem
 .PHONY: rootfs
-rootfs:
-	${MAKE} -C rootfs
+rootfs: user kmod
+	$(MAKE) -C rootfs
 
 # Run UML
 .PHONY: run
@@ -22,5 +32,7 @@ run: rootfs
 
 .PHONY: clean
 clean:
-	${MAKE} -C rootfs clean
-	${MAKE} -C ${LINUX_DIR} mrproper
+	$(MAKE) -C user clean
+	$(MAKE) -C kmod clean
+	$(MAKE) -C rootfs clean
+	$(MAKE) -C ${LINUX_DIR} mrproper

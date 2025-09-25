@@ -1,5 +1,3 @@
-#include <dirent.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,58 +26,27 @@ int builtin_cd(char **args) {
   return 0;
 }
 
+int builtin_pwd() {
+  char cwd[1024];
+  if (getcwd(cwd, sizeof(cwd)) != NULL) {
+    printf("%s\n", cwd);
+  }
+  return 0;
+}
+
 int builtin_exit() { return reboot(RB_HALT_SYSTEM); }
 
 int builtin_help() {
   printf("Built-in commands:\n");
-  printf("  help          - Show this help\n");
-  printf("  cd <dir>      - Change directory\n");
-  printf("  ls            - List directory contents\n");
-  printf("  cat <file>    - Display file contents\n");
-  printf("  echo <text>   - Print text\n");
-  printf("  Ctrl+C / exit - Exit the shell\n");
-  return 1;
-}
-
-int builtin_ls() {
-  DIR *dir = opendir(".");
-  if (dir == NULL) {
-    perror("ls");
-    return 1;
-  }
-  struct dirent *entry;
-  while ((entry = readdir(dir)) != NULL) {
-    printf("%s  \n", entry->d_name);
-  }
-  closedir(dir);
-  return 0;
-}
-
-int builtin_cat(char **args) {
-  if (args[1] == NULL) {
-    fprintf(stderr, "cat: expected argument\n");
-    return 1;
-  }
-
-  FILE *file = fopen(args[1], "r");
-  if (file == NULL) {
-    perror("cat");
-    return 1;
-  }
-
-  char buffer[1024];
-  while (fgets(buffer, sizeof(buffer), file)) {
-    printf("%s", buffer);
-  }
-  fclose(file);
-  return 0;
-}
-
-int builtin_echo(char **args) {
-  for (int i = 1; args[i] != NULL; i++) {
-    printf("%s ", args[i]);
-  }
-  printf("\n");
+  printf("  help            - Show this help\n");
+  printf("  cd <dir>        - Change directory\n");
+  printf("  pwd             - Print working directory\n");
+  printf("  Ctrl+C / exit   - Exit the shell\n");
+  printf("External commands:\n");
+  printf("  ls              - List directory contents\n");
+  printf("  cat <file>      - Print file contents:    `cat README.md`\n");
+  printf("  insmod <file>   - Load a kernel module:   `insmod kmod/main.ko`\n");
+  printf("  rmmod <module>  - Unload a kernel module: `rmmod main`\n");
   return 0;
 }
 
@@ -90,9 +57,11 @@ struct builtin {
 };
 
 struct builtin builtins[] = {
-    {"cd", builtin_cd}, {"exit", builtin_exit}, {"help", builtin_help},
-    {"ls", builtin_ls}, {"cat", builtin_cat},   {"echo", builtin_echo},
-    {NULL, NULL},
+    {"cd", builtin_cd},
+    {"pwd", builtin_pwd},
+    {"exit", builtin_exit},
+    {"help", builtin_help},
+    {},
 };
 
 // Check if command is built-in
@@ -141,7 +110,6 @@ int execute_external(char **args) {
 
 // Main shell loop
 void shell_loop() {
-  printf("Welcome to UML Simple Root Filesystem\n");
   builtin_help();
 
   while (1) {
@@ -169,7 +137,8 @@ void shell_loop() {
 
 int main() {
   // Initialize system
-  printf("Initializing UML Root Filesystem...\n");
+  printf("\n");
+  printf("Welcome to UML Simple Root Filesystem\n");
 
   // Start the shell
   shell_loop();

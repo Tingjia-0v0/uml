@@ -1,21 +1,15 @@
-BIN_DIR = rootfs/bin
-EXES = $(patsubst %.c,$(BIN_DIR)/%,$(wildcard *.c))
+IMG ?= img.ext4
 
 .PHONY: all
-all: rootfs.ext4
+all: $(IMG)
 
-# Build the executables
-$(BIN_DIR)/%: %.c
-	gcc -Wall -Wextra -std=c99 -static -o $@ $<
-
-# Create the root filesystem image
-rootfs.ext4: $(EXES)
-	dd if=/dev/zero of=rootfs.ext4 bs=1M count=64
-	mkfs.ext4 -F rootfs.ext4
-	sudo mount -o loop rootfs.ext4 mount
-	sudo cp -r rootfs/* mount/
+$(IMG): $(wildcard data/*)
+	dd if=/dev/zero of=$(IMG) bs=1M count=64
+	mkfs.ext4 -F $(IMG)
+	sudo mount -o loop $(IMG) mount
+	sudo cp -r data/* mount/
 	sudo umount mount
 
 .PHONY: clean
 clean:
-	rm -rf $(EXES)
+	rm -f $(IMG)
