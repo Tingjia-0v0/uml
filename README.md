@@ -5,7 +5,7 @@ Install dependencies
 
 ```sh
 sudo apt update
-sudo apt install -y build-essential flex bison libncurses-dev libssl-dev libelf-dev
+sudo apt install -y build-essential flex bison libncurses-dev libssl-dev libelf-dev bear
 ```
 
 Download and extract Linux Kernel

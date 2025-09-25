@@ -16,9 +16,10 @@ user:
 	$(MAKE) -C user
 
 # Build the kernel module
+BEAR_CMD := $(if $(shell which bear),bear --append --output compile_commands.json --,)
 .PHONY: kmod
 kmod:
-	$(MAKE) -C kmod
+	$(BEAR_CMD) $(MAKE) -C kmod
 
 # Build the root filesystem
 .PHONY: rootfs
