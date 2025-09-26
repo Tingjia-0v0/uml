@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/errno.h>
 #include <sys/mount.h>
 #include <sys/reboot.h>
 #include <sys/stat.h>
@@ -11,22 +12,16 @@
 #define MAX_ARGS 64
 
 // Mount filesystems
-int mount_fs(const char *dir, const char *type) {
-  // create directory if it doesn't exist
-  if (mkdir(dir, 0755) != 0) {
-    perror("mkdir");
+int mount_filesystems() {
+  if (mount("none", "/proc", "proc", 0, "") != 0) {
+    perror("mount");
     return 1;
   }
-  // mount filesystem
-  if (mount("none", dir, type, 0, "") != 0) {
+  if (mount("none", "/sys", "sysfs", 0, "") != 0) {
     perror("mount");
     return 1;
   }
   return 0;
-}
-
-int mount_filesystems() {
-  return mount_fs("/proc", "proc") || mount_fs("/sys", "sysfs");
 }
 
 // Built-in shell commands
@@ -58,7 +53,8 @@ int builtin_help() {
   printf("  pwd             - Print working directory\n");
   printf("  Ctrl+C / exit   - Exit the shell\n");
   printf("External commands:\n");
-  printf("  ls <dir>        - List directory :        `ls /proc`\n");
+  printf("  ps              - List processes\n");
+  printf("  ls <dir>        - List directory:        `ls /proc`\n");
   printf("  cat <file>      - Print file contents:    `cat /proc/cpuinfo`\n");
   printf("  insmod <file>   - Load a kernel module:   `insmod kmod/main.ko`\n");
   printf("  rmmod <module>  - Unload a kernel module: `rmmod main`\n");
