@@ -15,7 +15,7 @@ linux:
 # Build the userspace programs
 .PHONY: user
 user:
-	$(MAKE) -C user
+	$(BEAR_CMD) $(MAKE) -C user
 
 # Build the kernel module
 .PHONY: kmod
