@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
-int main() {
-  DIR *dir = opendir(".");
+int main(int argc, char **argv) {
+  const char *path = argc == 2 ? argv[1] : ".";
+  DIR *dir = opendir(path);
   if (dir == NULL) {
-    perror("ls");
+    perror("opendir");
     return 1;
   }
   struct dirent *entry;
@@ -16,4 +17,5 @@ int main() {
     printf("%s  \n", entry->d_name);
   }
   closedir(dir);
+  return 0;
 }

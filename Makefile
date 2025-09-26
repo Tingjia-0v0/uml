@@ -30,7 +30,7 @@ rootfs: user kmod
 # Run UML
 .PHONY: run
 run: rootfs
-	./${LINUX_DIR}/linux ubd0=${ROOTFS} root=/dev/ubda mem=256M
+	./${LINUX_DIR}/linux ubd0=${ROOTFS} root=/dev/ubda mem=256M rw
 
 .PHONY: clean
 clean:

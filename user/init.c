@@ -1,20 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mount.h>
 #include <sys/reboot.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #define MAX_LINE 1024
 #define MAX_ARGS 64
 
-// Simple shell for UML root filesystem
-void print_prompt() {
-  printf("UML# ");
-  fflush(stdout);
+// Mount filesystems
+int mount_fs(const char *dir, const char *type) {
+  // create directory if it doesn't exist
+  if (mkdir(dir, 0755) != 0) {
+    perror("mkdir");
+    return 1;
+  }
+  // mount filesystem
+  if (mount("none", dir, type, 0, "") != 0) {
+    perror("mount");
+    return 1;
+  }
+  return 0;
 }
 
-// Built-in commands
+int mount_filesystems() {
+  return mount_fs("/proc", "proc") || mount_fs("/sys", "sysfs");
+}
+
+// Built-in shell commands
 int builtin_cd(char **args) {
   if (args[1] == NULL) {
     fprintf(stderr, "cd: expected argument\n");
@@ -43,8 +58,8 @@ int builtin_help() {
   printf("  pwd             - Print working directory\n");
   printf("  Ctrl+C / exit   - Exit the shell\n");
   printf("External commands:\n");
-  printf("  ls              - List directory contents\n");
-  printf("  cat <file>      - Print file contents:    `cat README.md`\n");
+  printf("  ls <dir>        - List directory :        `ls /proc`\n");
+  printf("  cat <file>      - Print file contents:    `cat /proc/cpuinfo`\n");
   printf("  insmod <file>   - Load a kernel module:   `insmod kmod/main.ko`\n");
   printf("  rmmod <module>  - Unload a kernel module: `rmmod main`\n");
   return 0;
@@ -113,7 +128,8 @@ void shell_loop() {
   builtin_help();
 
   while (1) {
-    print_prompt();
+    printf("UML# ");
+    fflush(stdout);
 
     char line[MAX_LINE];
     if (fgets(line, sizeof(line), stdin) == NULL) {
@@ -136,11 +152,11 @@ void shell_loop() {
 }
 
 int main() {
-  // Initialize system
   printf("\n");
   printf("Welcome to UML Simple Root Filesystem\n");
 
-  // Start the shell
+  mount_filesystems();
   shell_loop();
+  builtin_exit();
   return 0;
 }
