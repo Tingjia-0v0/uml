@@ -54,7 +54,7 @@ int builtin_help() {
   printf("  Ctrl+C / exit   - Exit the shell\n");
   printf("External commands:\n");
   printf("  ps              - List processes\n");
-  printf("  ls <dir>        - List directory:        `ls /proc`\n");
+  printf("  ls <dir>        - List directory:         `ls /proc`\n");
   printf("  cat <file>      - Print file contents:    `cat /proc/cpuinfo`\n");
   printf("  insmod <file>   - Load a kernel module:   `insmod kmod/main.ko`\n");
   printf("  rmmod <module>  - Unload a kernel module: `rmmod main`\n");
