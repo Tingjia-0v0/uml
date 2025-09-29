@@ -2,12 +2,13 @@ OUT ?= $(abspath ../rootfs/data/kmod)
 SRC ?= $(shell pwd)
 KERNELDIR ?= $(abspath ../linux-6.14)
 
-obj-m := main.o
+obj-m := main.o controller.o
 
-main.ko: main.c
+main.ko  controller.ko: main.c controller.c
 	$(MAKE) -C ${KERNELDIR} M=$(SRC) modules ARCH=um
-	cp $(SRC)/main.ko $(OUT)/main.ko
+	cp $(SRC)/*.ko $(OUT)/
 
 .PHONY: clean
 clean:
 	$(MAKE) -C ${KERNELDIR} M=$(SRC) clean
+
