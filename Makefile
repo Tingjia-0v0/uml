@@ -15,7 +15,7 @@ linux:
 # Build the userspace programs
 .PHONY: user
 user:
-	$(MAKE) -C user
+	$(BEAR_CMD) $(MAKE) -C user
 
 # Build the kernel module
 .PHONY: kmod
@@ -30,7 +30,7 @@ rootfs: user kmod
 # Run UML
 .PHONY: run
 run: rootfs
-	./${LINUX_DIR}/linux ubd0=${ROOTFS} root=/dev/ubda mem=256M
+	./${LINUX_DIR}/linux ubd0=${ROOTFS} root=/dev/ubda mem=256M rw
 
 .PHONY: clean
 clean:

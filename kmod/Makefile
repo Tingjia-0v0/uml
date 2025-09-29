@@ -3,6 +3,7 @@ SRC ?= $(shell pwd)
 KERNELDIR ?= $(abspath ../linux-6.14)
 
 obj-m := main.o controller.o
+CFLAGS_main.o := -I$(KERNELDIR)
 
 main.ko  controller.ko: main.c controller.c
 	$(MAKE) -C ${KERNELDIR} M=$(SRC) modules ARCH=um
@@ -11,4 +12,4 @@ main.ko  controller.ko: main.c controller.c
 .PHONY: clean
 clean:
 	$(MAKE) -C ${KERNELDIR} M=$(SRC) clean
-
+	rm -rf $(OUT)/*.ko

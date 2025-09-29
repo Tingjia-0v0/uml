@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <linux/module.h>
 #include <sys/syscall.h>
 #include <unistd.h>
